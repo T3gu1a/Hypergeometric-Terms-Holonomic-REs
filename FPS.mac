@@ -3388,6 +3388,7 @@ NLDE(fun,F):=catch(block([f,z,A0,flag,N,I,V,Coef,Eq,Eqs,Sumds,S,D,tmp,polfact,Lf
     )
 ))$
 
+Copyright();
 
 M: MM$
 N: NN$
