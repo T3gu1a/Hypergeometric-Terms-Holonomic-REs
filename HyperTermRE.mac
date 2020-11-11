@@ -19,9 +19,9 @@ checkinput(RE,a):=block([opRE,opa,vara,recterm,holoeq],
     vara: errcatch(first(a)),
     errormsg:true,
     if length(opRE)>0 and length(opa)>0 and length(vara)>0 then (
-        opRE:opRE[1],
-        opa:opa[1],
-        vara:vara[1],
+        opRE:first(opRE),
+        opa:first(opa),
+        vara:first(vara),
         if opRE="=" and atom(opa) and atom(vara) then
             if freeof(opa,RE) or freeof(vara,RE) then false
             else(
@@ -30,7 +30,7 @@ checkinput(RE,a):=block([opRE,opa,vara,recterm,holoeq],
                 holoeq:subst(map(lambda([v],v=0),recterm),lhs(RE)),
                 if holoeq=0 then true
                 else(
-                    print("The given recurrence equation is not holonomic"),
+                    print("The given recurrence equation is not holonomic in the variable",nounify(opa)[nounify(vara)]),
                     false
                 )
             )
@@ -58,9 +58,9 @@ HypervanHoeij(Eq,a,[F]):= block([RE],
         false
     )
     else
-        if(emptyp(F)) then vanHoeij(REcoeff(RE,a),first(a))
-        elseif(F[1]=C) then ComplexvanHoeij(REcoeff(RE,a),first(a))
-        elseif(F[1]=Q) then vanHoeij(REcoeff(RE,a),first(a))
+        if(emptyp(F)) then vanHoeij(Polcoeff(RE,a),first(a))
+        elseif(F[1]=C) then ComplexvanHoeij(Polcoeff(RE,a),first(a))
+        elseif(F[1]=Q) then vanHoeij(Polcoeff(RE,a),first(a))
         else (
             print(F[1], " is unknown. Please use Q or C"),
             false
@@ -88,6 +88,20 @@ REcoeff(RE,a):=block([n,recterm,e0,re,o,i],
     makelist(coeff(re,subst(n+i,n,a)),i,0,o)
 )$
 
+/************* rewrite the equation in a holonomic form in case of rational coefficients ***************/
+
+Polcoeff(RE,a):=block([C,denomC,n,freen,proddenom],
+    C:REcoeff(RE,a),
+    denomC:map(denom,C),
+    n:first(a),
+    freen:sublist(denomC,lambda([v],freeof(n,v))),
+    if length(freen)=length(denomC) then C
+    else(
+        proddenom:lprod(denomC),
+        map(lambda([v],proddenom*v),C)
+    )
+)$
+
 /**************** simplification of a holonomic RE (list of coefficients) *********************/
 
 simpRE(LRE,n):=block([lre,numlre,denomlre,comfactnum,comfactden],
@@ -110,8 +124,7 @@ simpRE(LRE,n):=block([lre,numlre,denomlre,comfactnum,comfactden],
 
 /*** main algorithm ***/
 
-vanHoeij(recoeff,n):= catch(block([domain:real, Hyp,inftype,d,dsol,P0,Pd,cvalue,inftypeset,inftypenub,c,candidates,ccandidates,bettercandidates,chs,term,Lre,sR],
-    Hyp: {},
+vanHoeij(recoeff,n):= catch(block([domain:real, Hyp:{}, inftype,d,dsol,P0,Pd,cvalue,inftypeset,inftypenub,c,candidates,ccandidates,bettercandidates,chs,term,Lre,sR],
     if length(recoeff)<2 or sublist(recoeff,lambda([v], v#0))=[] then throw(Hyp),
     inftype: localtype(expand(recoeff),n),
     if(length(inftype)=0) then Hyp 
