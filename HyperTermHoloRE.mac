@@ -65,7 +65,7 @@ HypervanHoeij(Eq,a,[F]):= block([RE],
         )
 )$
 
-load("basic")$  /* to use pop */
+/*load("basic")$   to use pop */
 
 load("functs")$ /* to use lcm */
 
