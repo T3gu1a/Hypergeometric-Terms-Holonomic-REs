@@ -687,6 +687,7 @@ ComplexmodZ(roots,mult):=block([domain:complex,S,pos,already,modroots,cmodroots,
 )$
 
 Copyright():=block([],
+    print("Hypergeometric terms and holonomic recurrence equations"),
     print("Version 1.0"),
     print("Execute 'Infos()' for details"),
     print("Copyright (c) September 2020, Bertrand Teguia T."),
