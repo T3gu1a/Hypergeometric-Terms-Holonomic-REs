@@ -429,11 +429,11 @@ colTerm2(func,law):=block([f1,L,T],
 
 /*******************   dispersion set code for two given polynomials  ************************/
 
-dispersionSet(P,Q,n,[F]):=block([],
-    if polynomialp(P,[n]) and polynomialp(Q,[n]) then 
-        if(emptyp(F)) then hvw(factor(Q),factor(P),n)
-        elseif F[1]=C then hvw(Complexirfactor(Q,n),Complexirfactor(P,n),n)
-        elseif F[1]=Q then hvw(factor(Q),factor(P),n)
+dispersionSet(P1,P2,n,[F]):=block([],
+    if polynomialp(P1,[n]) and polynomialp(P2,[n]) then 
+        if(emptyp(F)) then hvw(factor(P2),factor(P1),n)
+        elseif F[1]=C then hvw(Complexirfactor(P2,n),Complexirfactor(P1,n),n)
+        elseif F[1]=Q then hvw(factor(P2),factor(P1),n)
         else (
             print(F[1], " is unknown. Please use Q or C"),
             false
