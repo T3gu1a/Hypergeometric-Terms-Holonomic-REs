@@ -1,5 +1,5 @@
 # Hypergeometric-Terms-Holonomic-REs
-A Maxima package to efficiently compute a basis of the subspace of hypergeometric term solutions of any holonomic recurrence equation.
+A Maxima package to efficiently compute a basis of the subspace of hypergeometric term solutions of any holonomic recurrence equation. Recurrence equations with rational coefficients are also considered.
 
 The file HyperTermHoloRE.mac is the package (source code);
 
