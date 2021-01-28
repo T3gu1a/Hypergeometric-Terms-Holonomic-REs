@@ -518,21 +518,29 @@ removeConst(Sexpr,n):=block([expr, o, nexpr, dexpr, A, S:{}],
     for expr in Sexpr do (
         nexpr:num(expr),
         dexpr:denom(expr),
-        errormsg:false,
-        o:errcatch(op(nexpr)),
-        errormsg:true,
-        if (length(o)>0 and o[1]="*") then(
-            A:args(nexpr),
-            A:sublist(A,lambda([v],not freeof(n,v))),
-            nexpr:lprod(A)
+        if freeof(n,nexpr) then
+            nexpr:1
+        else (
+            errormsg:false,
+            o:errcatch(op(nexpr)),
+            errormsg:true,
+            if (length(o)>0 and o[1]="*") then(
+                A:args(nexpr),
+                A:sublist(A,lambda([v],not freeof(n,v))),
+                nexpr:lprod(A)
+            )
         ),
-        errormsg:false,
-        o:errcatch(op(dexpr)),
-        errormsg:true,
-        if (length(o)>0 and o[1]="*") then(
-            A:args(dexpr),
-            A:sublist(A,lambda([v],not freeof(n,v))),
-            dexpr:lprod(A)
+        if freeof(n,dexpr) then
+            dexpr:1
+        else (        
+            errormsg:false,
+            o:errcatch(op(dexpr)),
+            errormsg:true,
+            if (length(o)>0 and o[1]="*") then(
+                A:args(dexpr),
+                A:sublist(A,lambda([v],not freeof(n,v))),
+                dexpr:lprod(A)
+            )
         ),
         S:adjoin(nexpr/dexpr,S)
     ),
@@ -611,7 +619,7 @@ ComplexfindC(nulist,leadcoeffs,ijcouple):=block([domain:complex,LC:[], pos,cnuli
                 Csolind: sublist_indices(Csol, lambda([v],freeof(%x,v) and v#0)),
                 Csol: map(lambda([v],Csol[v]),Csolind),
                 Csolmult: map(lambda([v],multiplicities[v]),Csolind),
-                for i thru length(Csol) do LC: endcons([nu,ratsimp(Csol[i]),Csolmult[i]],LC)
+                for i thru length(Csol) do LC: endcons([nu,ratsimp(Csol[i]),Csolmult[i],eqC],LC)
             ),
             already: append(already,samenu)
         ),
@@ -644,13 +652,13 @@ constantpart(c):=block([listc,v],
 )$
 
 remimpextF(F,L) := block([domain:complex,SF, extFS, Csol, c, cFS, dimc],
-    SF: map(lambda([v], [v[1],[v[2]],v[3],algIndets(v[2])]),L),
+    SF: map(lambda([v], [v[1],[v[2]],v[3],algIndets(v[2]),v[4]]),L),
     extFS: sublist(SF, lambda([v], cardinality(v[4])>0 and disjointp(v[4],F))),
     Csol: map(lambda([v],firstn(v,3)),sublist(SF, lambda([v], not member(v,extFS)))),
     extFS: sort(extFS,lambda([x,y],cardinality(x[4])<cardinality(y[4]))),
     for c in extFS do(
         extFS: delete(c,extFS),
-        cFS: sublist(extFS,lambda([v], subsetp(c[4],v[4]) or subsetp(v[4],c[4]) and c[1]=v[1])),
+        cFS: sublist(extFS,lambda([v], (subsetp(c[4],v[4]) or subsetp(v[4],c[4])) and c[5]=v[5])),
         extFS: sublist(extFS,lambda([v], not member(v,cFS))),
         if length(cFS)>0 then(
             cFS: setify(apply(append,cons(c[2],map(second, cFS)))),
@@ -835,7 +843,6 @@ ComplexvanHoeij(recoeff,n):= catch(block([domain:complex, Hyp,d,dsol,P0,Pd,infty
                         sR: ComplexRatsolve(simpRE(Lre,n),n,chs),
                         if(sR#false) then (
                             sR: removeConst(sR,n),
-                            print(sR),
                             term: term/Cchltype[2][1],
                             for e in Cchltype[2] do
                                 Hyp: union(Hyp, map(lambda([v],e^n*v*pochfactorsimp(term,n)),sR)),
